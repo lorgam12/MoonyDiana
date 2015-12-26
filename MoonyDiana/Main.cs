@@ -177,8 +177,9 @@ namespace MoonyDiana
 
         private void Combo()
         {
-            var target = TargetSelector.SelectedTarget ?? EntityManager.Heroes.Enemies.Where(x => x.Distance(me) <= 1000).
-                OrderByDescending(TargetSelector.GetPriority).First();
+            var target = TargetSelector.SelectedTarget.IsValid ? TargetSelector.SelectedTarget 
+                : EntityManager.Heroes.Enemies.Where(x => x.Distance(me) <= 1000 && x.IsValid).
+                    OrderByDescending(TargetSelector.GetPriority).First();
 
             var pred = q.GetPrediction(target);
 
@@ -236,8 +237,9 @@ namespace MoonyDiana
 
         private void Harass()
         {
-            var target = TargetSelector.SelectedTarget ?? EntityManager.Heroes.Enemies.Where(x => x.Distance(me) <= 1000).
-                OrderByDescending(TargetSelector.GetPriority).First();            
+            var target = TargetSelector.SelectedTarget.IsValid ? TargetSelector.SelectedTarget
+                : EntityManager.Heroes.Enemies.Where(x => x.Distance(me) <= 1000 && x.IsValid).
+                    OrderByDescending(TargetSelector.GetPriority).First();
 
             if (me.ManaPercent >= config.harassMenu.Get<Slider>("minManaQHarass").CurrentValue && target.Distance(me) <= 1500 &&
                 ready(SpellSlot.Q))
@@ -298,7 +300,7 @@ namespace MoonyDiana
                 && ready(SpellSlot.W))
                 Player.CastSpell(SpellSlot.E);
             else if (ready(SpellSlot.W))
-                if (minionPos.Any(x => x.Distance(me) <= 500) && config.jungleClearMenu.Get<CheckBox>("useWWaveClear").CurrentValue)
+                if (minionPos.Any(x => x.Distance(me) <= 500) && config.waveClearMenu.Get<CheckBox>("useWWaveClear").CurrentValue)
                     Player.CastSpell(SpellSlot.W);
         }
 
