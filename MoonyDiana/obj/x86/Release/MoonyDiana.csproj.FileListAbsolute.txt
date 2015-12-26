@@ -1,0 +1,10 @@
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Release\MoonyDiana.exe.config
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Release\MoonyDiana.exe
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Release\MoonyDiana.pdb
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Release\EloBuddy.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Release\EloBuddy.SDK.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Release\SharpDX.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Release\SharpDX.Direct3D9.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Release\Newtonsoft.Json.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\obj\x86\Release\MoonyDiana.exe
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\obj\x86\Release\MoonyDiana.pdb

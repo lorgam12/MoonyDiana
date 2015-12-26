@@ -1,0 +1,11 @@
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Debug\MoonyDiana.exe.config
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Debug\MoonyDiana.exe
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Debug\MoonyDiana.pdb
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Debug\EloBuddy.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Debug\EloBuddy.SDK.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Debug\SharpDX.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Debug\SharpDX.Direct3D9.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\bin\x86\Debug\Newtonsoft.Json.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\obj\x86\Debug\MoonyDiana.csprojResolveAssemblyReference.cache
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\obj\x86\Debug\MoonyDiana.exe
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\MoonyDiana\MoonyDiana\obj\x86\Debug\MoonyDiana.pdb
