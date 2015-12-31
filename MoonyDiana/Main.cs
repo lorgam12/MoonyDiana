@@ -70,6 +70,11 @@ namespace MoonyDiana
                 if (!any)
                     args.Process = false;
             }
+
+            if ((args.Slot == SpellSlot.Q || args.Slot == SpellSlot.E || args.Slot == SpellSlot.R) &&
+                    Orbwalker.CanAutoAttack && EntityManager.Heroes.Enemies.Any(x => x.IsValid && !x.IsDead &&
+                    x.Distance(me) <= me.AttackRange))
+                args.Process = false;
         }
 
         private float GetEnemyTimeOuttaE(AIHeroClient enemy)
@@ -177,16 +182,18 @@ namespace MoonyDiana
 
         private void Combo()
         {
-            var target = TargetSelector.SelectedTarget.IsValid ? TargetSelector.SelectedTarget 
-                : EntityManager.Heroes.Enemies.Where(x => x.Distance(me) <= 1000 && x.IsValid).
-                    OrderByDescending(TargetSelector.GetPriority).First();
+            var target = TargetSelector.GetTarget(2000, DamageType.Magical);
+            target = target ?? TargetSelector.GetTarget(1500, DamageType.Physical);
+
+            target = target ?? TargetSelector.GetTarget(1500, DamageType.Physical);
 
             var pred = q.GetPrediction(target);
 
             if (config.comboMenu.Get<CheckBox>("useR").CurrentValue && ready(SpellSlot.R))
             {
-                if (ready(SpellSlot.Q))
+                if (ready(SpellSlot.Q) && me.GetSpellDamage(target, SpellSlot.R) > target.Health)
                 {
+                    Player.CastSpell(SpellSlot.R, target);
                     ///*target cant evade Q*/
                     //bool highHitChance = pred.HitChance >= HitChance.High &&
                     //                config.comboMenu.Get<CheckBox>("useRQ").CurrentValue;
@@ -237,9 +244,8 @@ namespace MoonyDiana
 
         private void Harass()
         {
-            var target = TargetSelector.SelectedTarget.IsValid ? TargetSelector.SelectedTarget
-                : EntityManager.Heroes.Enemies.Where(x => x.Distance(me) <= 1000 && x.IsValid).
-                    OrderByDescending(TargetSelector.GetPriority).First();
+            var target = TargetSelector.GetTarget(2000, DamageType.Magical);
+            target = target ?? TargetSelector.GetTarget(1500, DamageType.Physical);
 
             if (me.ManaPercent >= config.harassMenu.Get<Slider>("minManaQHarass").CurrentValue && target.Distance(me) <= 1500 &&
                 ready(SpellSlot.Q))
@@ -252,7 +258,7 @@ namespace MoonyDiana
 
         private void JungleClear()
         {
-            List<Vector2> minionPos = ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsValid && x.Distance(me) <= 1000).
+            List<Vector2> minionPos = ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsValid && x.Distance(me) <= 1000 && !x.IsDead).
                                                 Select(minion => minion.Position.To2D()).ToList();
 
             Vector2 pos = GetBestQPos(minionPos, qRadius, 1);
@@ -282,7 +288,8 @@ namespace MoonyDiana
         private void LaneClear()
         {
             List<Vector2> minionPos =
-                                ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsEnemy && x.IsValid && x.Distance(me) <= qRange).
+                                ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsEnemy && x.IsValid && x.Distance(me) <= qRange 
+                                && !x.IsDead).
                                     Select(minion => minion.Position.To2D()).ToList();
 
             int minHitCount = config.waveClearMenu.Get<Slider>("qWaveClear").CurrentValue;
