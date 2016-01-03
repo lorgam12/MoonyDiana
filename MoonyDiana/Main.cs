@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
@@ -195,13 +196,12 @@ namespace MoonyDiana
             //    return;
 
             //var arcPolyTuple =
-            //    new ArcMyWay(start, end, (int) ObjectManager.Player.BoundingRadius).ToPolygonEx();
+            //    new ArcMyWay(start, end, (int)ObjectManager.Player.BoundingRadius).ToPolygonEx();
             //Geometry.Polygon polygon = arcPolyTuple.Item1;
             //Vector2 center = arcPolyTuple.Item2;
 
             //polygon.DrawPolygon(System.Drawing.Color.Red, 5);
             //new Circle(Color.Blue, qRadius).Draw(center.To3D());
-            //Chat.Print("hi");
         }
 
         private void Combo()
@@ -322,11 +322,20 @@ namespace MoonyDiana
             int minHitCount = config.waveClearMenu.Get<Slider>("qWaveClear").CurrentValue;
             if (minHitCount != -1)//enabled
             {
-                /*circular calculations*/
-                Vector2 pos = GetBestQPos(minionPos, qRadius, minHitCount);
+                if (betterQLogic)
+                {
+                    /*arc calculations*/
+                    DoArcCalculationsWaveClear(minHitCount);
+                }
+                else
+                {
+                    /*circular calculations*/
+                    Vector2 pos = GetBestQPos(minionPos, qRadius, minHitCount);
 
-                if (pos != new Vector2() && ready(SpellSlot.Q))
-                    Player.CastSpell(SpellSlot.Q, pos.To3D());
+                    if (pos != new Vector2() && ready(SpellSlot.Q))
+                        Player.CastSpell(SpellSlot.Q, pos.To3D());
+                }
+                
             }
 
             /*E*/
@@ -339,6 +348,45 @@ namespace MoonyDiana
             else if (ready(SpellSlot.W))
                 if (minionPos.Any(x => x.Distance(me) <= 500) && config.waveClearMenu.Get<CheckBox>("useWWaveClear").CurrentValue)
                     Player.CastSpell(SpellSlot.W);
+        }
+        private void DoArcCalculationsWaveClear(int minimalMinionHitCount)
+        {
+            Task t = Task.Factory.StartNew(() =>
+            {
+                Vector2 mostHits = new Vector2();
+                int hitCount = 0;
+
+                float quality = config.waveClearMenu.Get<Slider>("betterQLogicQualityWaveClear").CurrentValue / 100.0f;
+                float step = 50 - (quality * 49);
+                float step2 = qRange / 2 - (quality * 365);
+
+                for (float i = 0; i < 361; i += step)
+                {
+                    for (float range = qRange; range > (int)me.BoundingRadius; range -= step2)
+                    {
+                        Vector2 pointOnCirc = ArcMyWay.PointOnCircle(range, i, me.Position.To2D());
+
+                        var polyTuple = new ArcMyWay(me.Position.To2D(), pointOnCirc, (int)me.BoundingRadius).ToPolygonEx();
+                        var arcPolygon = polyTuple.Item1;
+                        var center = polyTuple.Item2;
+
+                        Geometry.Polygon.Circle qCircle = new Geometry.Polygon.Circle(center, qRadius, (int)quality);
+
+                        var minionHitCount =
+                            EntityManager.MinionsAndMonsters.EnemyMinions.Count(x => arcPolygon.IsInside(x.Position)
+                                                                                     || qCircle.IsInside(x.Position));
+
+                        if ((hitCount == 0 || minionHitCount > hitCount) && minionHitCount >= minimalMinionHitCount)
+                        {
+                            hitCount = minionHitCount;
+                            mostHits = pointOnCirc;
+                        }
+                    }
+                }
+
+                if (mostHits != new Vector2())
+                    Player.CastSpell(SpellSlot.Q, mostHits.To3D());
+            });
         }
 
         private void CheckREvade()

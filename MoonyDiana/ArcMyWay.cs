@@ -11,6 +11,14 @@ namespace MoonyDiana
     /// </summary>
     public class ArcMyWay
     {
+        public static Vector2 PointOnCircle(float radius, float angleInDegrees, Vector2 origin)
+        {
+            float x = origin.X + (float)(radius * System.Math.Cos(angleInDegrees * Math.PI / 180));
+            float y = origin.Y + (float)(radius * System.Math.Sin(angleInDegrees * Math.PI / 180));
+
+            return new Vector2(x, y);
+        }
+
         private const int CircleLineSegmentN = 22;
 
         private Vector2[] CircleCircleIntersection(Vector2 center1, Vector2 center2, float radius1, float radius2)
