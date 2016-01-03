@@ -10,6 +10,7 @@ namespace MoonyDiana
             Loading.OnLoadingComplete += eventArgs =>
             {
                 //if (ObjectManager.Player.ChampionName == "Diana")
+                // ReSharper disable once ObjectCreationAsStatement
                 new Main();
             };
         }

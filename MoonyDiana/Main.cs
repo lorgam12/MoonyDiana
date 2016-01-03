@@ -48,12 +48,19 @@ namespace MoonyDiana
             Player.OnProcessSpellCast += PlayerOnOnProcessSpellCast;
         }
 
+        private Vector2 start = new Vector2(), end = new Vector2();
         private void PlayerOnOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsMe && args.Slot == SpellSlot.R)
             {
                 if (config.comboMenu.Get<CheckBox>("useEWhileR").CurrentValue && ready(SpellSlot.E))
                     Player.CastSpell(SpellSlot.E);
+            }
+
+            if (sender.IsMe && args.Slot == SpellSlot.Q)
+            {
+                start = args.Start.To2D();
+                end = args.End.To2D();
             }
         }
 
@@ -111,6 +118,8 @@ namespace MoonyDiana
 
         private void DrawingOnDraw(EventArgs args)
         {
+            NewMethod();
+
             if (config.drawMenu.Get<CheckBox>("drawQ").CurrentValue)
             {
                 new Circle(Color.Blue, qRange).Draw(me.Position);
@@ -157,7 +166,7 @@ namespace MoonyDiana
 
             return center;
         }
-        
+
         private void GameOnTick(EventArgs args)
         {
             if (ready(SpellSlot.R) && config.miscMenu.Get<CheckBox>("useREvade").CurrentValue)
@@ -178,6 +187,21 @@ namespace MoonyDiana
             {
                 Combo();
             }
+        }
+
+        private void NewMethod()
+        {
+            //if (start == new Vector2() || end == new Vector2())
+            //    return;
+
+            //var arcPolyTuple =
+            //    new ArcMyWay(start, end, (int) ObjectManager.Player.BoundingRadius).ToPolygonEx();
+            //Geometry.Polygon polygon = arcPolyTuple.Item1;
+            //Vector2 center = arcPolyTuple.Item2;
+
+            //polygon.DrawPolygon(System.Drawing.Color.Red, 5);
+            //new Circle(Color.Blue, qRadius).Draw(center.To3D());
+            //Chat.Print("hi");
         }
 
         private void Combo()
@@ -292,20 +316,26 @@ namespace MoonyDiana
                                 && !x.IsDead).
                                     Select(minion => minion.Position.To2D()).ToList();
 
+            bool betterQLogic = config.waveClearMenu.Get<CheckBox>("useBetterQLogicWaveClear").CurrentValue;
+
+            /*Q*/
             int minHitCount = config.waveClearMenu.Get<Slider>("qWaveClear").CurrentValue;
             if (minHitCount != -1)//enabled
             {
+                /*circular calculations*/
                 Vector2 pos = GetBestQPos(minionPos, qRadius, minHitCount);
 
                 if (pos != new Vector2() && ready(SpellSlot.Q))
                     Player.CastSpell(SpellSlot.Q, pos.To3D());
             }
 
+            /*E*/
             int minionHits = minionPos.Count(x => x.Distance(me) <= eRange); //eRange
 
             if (ready(SpellSlot.E) && minionHits >= config.waveClearMenu.Get<Slider>("useEWaveClear").CurrentValue
                 && ready(SpellSlot.W))
                 Player.CastSpell(SpellSlot.E);
+            /*W*/
             else if (ready(SpellSlot.W))
                 if (minionPos.Any(x => x.Distance(me) <= 500) && config.waveClearMenu.Get<CheckBox>("useWWaveClear").CurrentValue)
                     Player.CastSpell(SpellSlot.W);

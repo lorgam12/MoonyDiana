@@ -55,6 +55,10 @@ namespace MoonyDiana
             waveClearMenu.Add("qWaveClear", new Slider("Use Q if hit at least x minions", 3, -1, 10));
             waveClearMenu.Add("useWWaveClear", new CheckBox("Use W"));
             waveClearMenu.Add("useEWaveClear", new Slider("Use E if X minions will be hit", 3, 1, 10));
+
+            //waveClearMenu.AddLabel("New: ");
+           // waveClearMenu.Add("useBetterQLogicWaveClear", new CheckBox("Use intelligent Q logic to clear"));
+            //waveClearMenu.AddLabel("This feature is more cpu intense by generating 360 polygons per tick");
            // waveClearMenu.Add("useRWaveClear", new CheckBox("Use R (moonlight)"));
 
             jungleClearMenu = menu.AddSubMenu("Jungle Clear", "jungleClear");

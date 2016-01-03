@@ -547,7 +547,7 @@ namespace EvadePlus
                 //        MissileSpellName = "DariusAxeGrabCone"
                 //    }
                 //},
-                //new CircularMissileSkillshot //Unknown:SpellType.Arc
+                //new CircularMissileSkillshot //Unknown:SpellType.ArcMyWay
                 //{
                 //    SpellData = new SpellData
                 //    {

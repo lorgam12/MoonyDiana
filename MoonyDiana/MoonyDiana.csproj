@@ -87,6 +87,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArcMyWay.cs" />
     <Compile Include="config.cs" />
     <Compile Include="Evade\Core\EvadeResult.cs" />
     <Compile Include="Evade\Core\EvadePlus.cs" />
