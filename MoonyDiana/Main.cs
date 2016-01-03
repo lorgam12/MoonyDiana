@@ -29,6 +29,7 @@ namespace MoonyDiana
         private int eRange = 250;
         private int eDelay = 500;
         private int wRange = 200;
+        private int qDelay = 250;
 
         private readonly Spell.Skillshot q = new Spell.Skillshot(SpellSlot.Q, 830, SkillShotType.Circular, 250, 1600);
 
@@ -206,45 +207,77 @@ namespace MoonyDiana
 
         private void Combo()
         {
+            
             var target = TargetSelector.GetTarget(2000, DamageType.Magical);
             target = target ?? TargetSelector.GetTarget(1500, DamageType.Physical);
-
-            target = target ?? TargetSelector.GetTarget(1500, DamageType.Physical);
-
-            var pred = q.GetPrediction(target);
-
+            
+            /*R*/
             if (config.comboMenu.Get<CheckBox>("useR").CurrentValue && ready(SpellSlot.R))
             {
-                if (ready(SpellSlot.Q) && me.GetSpellDamage(target, SpellSlot.R) > target.Health)
+                if (me.GetSpellDamage(target, SpellSlot.R) > target.Health)
                 {
                     Player.CastSpell(SpellSlot.R, target);
-                    ///*target cant evade Q*/
-                    //bool highHitChance = pred.HitChance >= HitChance.High &&
-                    //                config.comboMenu.Get<CheckBox>("useRQ").CurrentValue;
-
-                    //if (highHitChance || me.GetSpellDamage(target, SpellSlot.R) > target.Health)
-                    //{
-                    //    Player.CastSpell(SpellSlot.R, target);
-                    //    Player.CastSpell(SpellSlot.Q, pred.UnitPosition);
-                    //}
                 }
-                else
+                else if (!ready(SpellSlot.Q))
                     Player.CastSpell(SpellSlot.R, target);
 
             }
-
-            if (pred.HitChance >= HitChance.High && config.comboMenu.Get<CheckBox>("useQ").CurrentValue &&
-                ready(SpellSlot.Q)
-                && pred.CastPosition.Distance(me) <= qRange)
+            
+            /*Q*/
+            if (config.comboMenu.Get<CheckBox>("useBetterQCombo").CurrentValue)
             {
-                Player.CastSpell(SpellSlot.Q, pred.UnitPosition);
+                DoQOnTargetAndOthers(target);
+            }
+            else
+            {
+                var pred = q.GetPrediction(target);
+                if (config.comboMenu.Get<CheckBox>("useQ").CurrentValue && ready(SpellSlot.Q))
+                {
+                    if (pred.HitChance >= HitChance.High)
+                    {
+                        Player.CastSpell(SpellSlot.Q, pred.CastPosition);
+                    }
+                }
             }
 
+            
+
+            /*W*/
             if (target.Distance(me) <= wRange +250 && config.comboMenu.Get<CheckBox>("useW").CurrentValue && ready(SpellSlot.W))
                 Player.CastSpell(SpellSlot.W);
 
             //E
             CheckEscaping(target);
+        }
+
+        /// <summary>
+        /// Tries to hit main target and as much as possible other targets
+        /// </summary>
+        /// <param name="target"></param>
+        private void DoQOnTargetAndOthers(AIHeroClient target)
+        {
+            /*target pred is at the the end of the array*/
+            var predExTarget = PredictionEx.GetPrediction(target, qDelay);
+            List<Vector2> enemyPredictions = new List<Vector2>();
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var enemy in EntityManager.Heroes.Enemies.Where(x => x.Distance(me) <= 1500))
+            {
+                var p = PredictionEx.GetPrediction(enemy, qDelay);
+                if (p.Hitchance >= HitChanceEx.High && p.CastPosition.Distance(me) <= qRange)
+                {
+                    enemyPredictions.Add(p.CastPosition.To2D());
+                }
+            }
+            enemyPredictions.Add(predExTarget.CastPosition.To2D());
+
+            if (config.comboMenu.Get<CheckBox>("useQ").CurrentValue && ready(SpellSlot.Q))
+            {
+                if (predExTarget.Hitchance >= HitChanceEx.High && predExTarget.CastPosition.Distance(me) <= qRange)
+                {
+                    /*make sure target pos is in the prospective polygons*/
+                    DoArcCalculations(1, enemyPredictions, enemyPredictions.Count - 1);
+                }
+            }
         }
 
         private void CheckEscaping(AIHeroClient target)
@@ -274,9 +307,19 @@ namespace MoonyDiana
             if (me.ManaPercent >= config.harassMenu.Get<Slider>("minManaQHarass").CurrentValue && target.Distance(me) <= 1500 &&
                 ready(SpellSlot.Q))
             {
-                var pred = q.GetPrediction(target);
-                if (pred.HitChance >= HitChance.High)
-                    Player.CastSpell(SpellSlot.Q, pred.CastPosition);
+                /*Q*/
+                if (config.harassMenu.Get<CheckBox>("useBetterQHarass").CurrentValue)
+                {
+                    DoQOnTargetAndOthers(target);
+                }
+                else
+                {
+                    var pred = q.GetPrediction(target);
+                    if (pred.HitChance >= HitChance.High)
+                    {
+                        Player.CastSpell(SpellSlot.Q, pred.CastPosition);
+                    }
+                }
             }
         }
 
@@ -319,18 +362,18 @@ namespace MoonyDiana
             bool betterQLogic = config.waveClearMenu.Get<CheckBox>("useBetterQLogicWaveClear").CurrentValue;
 
             /*Q*/
-            int minHitCount = config.waveClearMenu.Get<Slider>("qWaveClear").CurrentValue;
-            if (minHitCount != -1)//enabled
+            int minMinionHitCount = config.waveClearMenu.Get<Slider>("qWaveClear").CurrentValue;
+            if (minMinionHitCount != -1)//enabled
             {
                 if (betterQLogic)
                 {
                     /*arc calculations*/
-                    DoArcCalculationsWaveClear(minHitCount);
+                    DoArcCalculations(minMinionHitCount);
                 }
                 else
                 {
                     /*circular calculations*/
-                    Vector2 pos = GetBestQPos(minionPos, qRadius, minHitCount);
+                    Vector2 pos = GetBestQPos(minionPos, qRadius, minMinionHitCount);
 
                     if (pos != new Vector2() && ready(SpellSlot.Q))
                         Player.CastSpell(SpellSlot.Q, pos.To3D());
@@ -349,14 +392,26 @@ namespace MoonyDiana
                 if (minionPos.Any(x => x.Distance(me) <= 500) && config.waveClearMenu.Get<CheckBox>("useWWaveClear").CurrentValue)
                     Player.CastSpell(SpellSlot.W);
         }
-        private void DoArcCalculationsWaveClear(int minimalMinionHitCount)
+
+        bool isMainVectorInPolygon(Vector2 mainvec, Geometry.Polygon poly, Geometry.Polygon poly2)
         {
+            return poly.IsInside(mainvec) || poly2.IsInside(mainvec);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="minimalObjectHitCount"></param>
+        /// <param name="ownPosArray"></param>
+        /// <param name="mainIndex">Index in the array which has to get hit</param>
+        private void DoArcCalculations(int minimalObjectHitCount, List<Vector2> ownPosArray = null, int mainIndex = -1)
+        {
+            // ReSharper disable once UnusedVariable
             Task t = Task.Factory.StartNew(() =>
             {
                 Vector2 mostHits = new Vector2();
                 int hitCount = 0;
 
-                float quality = config.waveClearMenu.Get<Slider>("betterQLogicQualityWaveClear").CurrentValue / 100.0f;
+                float quality = config.miscMenu.Get<Slider>("betterQLogicQuality").CurrentValue / 100.0f;
                 float step = 50 - (quality * 49);
                 float step2 = qRange / 2 - (quality * 365);
 
@@ -372,14 +427,16 @@ namespace MoonyDiana
 
                         Geometry.Polygon.Circle qCircle = new Geometry.Polygon.Circle(center, qRadius, (int)quality);
 
-                        var minionHitCount =
-                            EntityManager.MinionsAndMonsters.EnemyMinions.Count(x => arcPolygon.IsInside(x.Position)
-                                                                                     || qCircle.IsInside(x.Position));
+                        int objectHitCount = ownPosArray != null ? ownPosArray.Count(x => arcPolygon.IsInside(x) || qCircle.IsInside(x)) 
+                            : EntityManager.MinionsAndMonsters.EnemyMinions.Count(x => arcPolygon.IsInside(x.Position)
+                                                                                                                                                                                || qCircle.IsInside(x.Position));
 
-                        if ((hitCount == 0 || minionHitCount > hitCount) && minionHitCount >= minimalMinionHitCount)
+                        if ((hitCount == 0 || objectHitCount > hitCount) && objectHitCount >= minimalObjectHitCount)
                         {
-                            hitCount = minionHitCount;
-                            mostHits = pointOnCirc;
+                            // ReSharper disable once PossibleNullReferenceException
+                            if (mainIndex > -1 && isMainVectorInPolygon(ownPosArray[mainIndex], arcPolygon, qCircle))
+                                hitCount = objectHitCount;
+                                mostHits = pointOnCirc;
                         }
                     }
                 }

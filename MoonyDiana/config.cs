@@ -38,6 +38,7 @@ namespace MoonyDiana
 
             comboMenu = menu.AddSubMenu("Combo", "combo");
             comboMenu.Add("useQ", new CheckBox("Use Q"));
+            comboMenu.Add("useBetterQCombo", new CheckBox("Use advanced Q logic"));
             comboMenu.Add("useW", new CheckBox("Use W"));
             comboMenu.Add("useEEscapingEnemy", new CheckBox("Use E on escaping enemy"));
             comboMenu.Add("blockE", new CheckBox("Block E if nobody gets hit"));
@@ -50,16 +51,14 @@ namespace MoonyDiana
 
             harassMenu = menu.AddSubMenu("Harass", "harass");
             harassMenu.Add("minManaQHarass", new Slider("Use Q if at least % mana available", 50));
+            harassMenu.Add("useBetterQHarass", new CheckBox("Use advanced Q logic"));
 
             waveClearMenu = menu.AddSubMenu("Wave Clear", "waveClear");
             waveClearMenu.Add("qWaveClear", new Slider("Use Q if hit at least x minions", 3, -1, 10));
             waveClearMenu.Add("useWWaveClear", new CheckBox("Use W"));
             waveClearMenu.Add("useEWaveClear", new Slider("Use E if X minions will be hit", 3, 1, 10));
 
-            waveClearMenu.AddLabel("New: ");
             waveClearMenu.Add("useBetterQLogicWaveClear", new CheckBox("Use intelligent Q logic to clear"));
-            waveClearMenu.Add("betterQLogicQualityWaveClear", new Slider("Quality in %", 20));
-            waveClearMenu.AddLabel("This feature is more cpu intense by generating many polygons");
            // waveClearMenu.Add("useRWaveClear", new CheckBox("Use R (moonlight)"));
 
             jungleClearMenu = menu.AddSubMenu("Jungle Clear", "jungleClear");
@@ -69,6 +68,9 @@ namespace MoonyDiana
             jungleClearMenu.Add("useRJungleClear", new CheckBox("Use R (moonlight)"));
 
             miscMenu = menu.AddSubMenu("Misc", "misc");
+            miscMenu.Add("betterQLogicQuality", new Slider("Advanced Q Quality in %", 20));
+            miscMenu.AddLabel("This feature is more cpu intense by generating many polygons");
+            miscMenu.AddSeparator();
             miscMenu.Add("interruptE", new CheckBox("Interrupt with E"));
             miscMenu.Add("antiGapE", new CheckBox("AntiGapCloser with E"));
             miscMenu.AddSeparator();
