@@ -45,6 +45,7 @@ namespace MoonyDiana
             comboMenu.Add("useEWhileR", new CheckBox("Use E while R"));
             comboMenu.AddSeparator();
             comboMenu.Add("useR", new CheckBox("Use R"));
+            comboMenu.Add("useRmoonlightOnly", new CheckBox("Only Use R when target has buff"));
             //comboMenu.Add("useRQ", new CheckBox("Try instant R -> Q"));
             comboMenu.AddSeparator();
 
@@ -56,9 +57,9 @@ namespace MoonyDiana
             waveClearMenu = menu.AddSubMenu("Wave Clear", "waveClear");
             waveClearMenu.Add("qWaveClear", new Slider("Use Q if hit at least x minions", 3, -1, 10));
             waveClearMenu.Add("useWWaveClear", new CheckBox("Use W"));
-            waveClearMenu.Add("useEWaveClear", new Slider("Use E if X minions will be hit", 3, 1, 10));
+            waveClearMenu.Add("useEWaveClear", new Slider("Use E if X minions will be hit", 3, -1, 10));
 
-            waveClearMenu.Add("useBetterQLogicWaveClear", new CheckBox("Use intelligent Q logic to clear"));
+            waveClearMenu.Add("useBetterQLogicWaveClear", new CheckBox("Use intelligent Q logic to clear and lasthit"));
            // waveClearMenu.Add("useRWaveClear", new CheckBox("Use R (moonlight)"));
 
             jungleClearMenu = menu.AddSubMenu("Jungle Clear", "jungleClear");

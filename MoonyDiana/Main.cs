@@ -185,9 +185,31 @@ namespace MoonyDiana
             if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Harass)
                 Harass();
 
+            if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.LastHit)
+                LastHit();
+
             if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Combo)
-            {
                 Combo();
+                    
+        }
+
+        private void LastHit()
+        {
+            bool betterQLogic = config.waveClearMenu.Get<CheckBox>("useBetterQLogicWaveClear").CurrentValue;
+
+            var lessHpMinions =
+                    EntityManager.MinionsAndMonsters.EnemyMinions.Where(
+                        x => me.GetSpellDamage(x, SpellSlot.Q) > x.Health);
+            List<Vector2> minionsPos = lessHpMinions.Select(x => x.Position.To2D()).ToList();
+
+            if (betterQLogic)
+            {
+                DoArcCalculations(1, minionsPos);
+            }
+            else
+            {
+                var castPos = GetBestQPos(minionsPos, qRadius, 1);
+                Player.CastSpell(SpellSlot.Q, castPos.To3D());
             }
         }
 
@@ -205,11 +227,15 @@ namespace MoonyDiana
             //new Circle(Color.Blue, qRadius).Draw(center.To3D());
         }
 
+        private bool targetHadBuff = false;
+        private int hadBuffTick;
         private void Combo()
-        {
-            
+        {      
             var target = TargetSelector.GetTarget(2000, DamageType.Magical);
             target = target ?? TargetSelector.GetTarget(1500, DamageType.Physical);
+
+            if (targetHadBuff && Environment.TickCount - hadBuffTick >= 2000)
+                targetHadBuff = false;
             
             /*R*/
             if (config.comboMenu.Get<CheckBox>("useR").CurrentValue && ready(SpellSlot.R))
@@ -219,7 +245,19 @@ namespace MoonyDiana
                     Player.CastSpell(SpellSlot.R, target);
                 }
                 else if (!ready(SpellSlot.Q))
-                    Player.CastSpell(SpellSlot.R, target);
+                {
+                    if (config.comboMenu.Get<CheckBox>("useRmoonlightOnly").CurrentValue && (target.HasBuff(buff) || targetHadBuff))
+                    {
+                        Player.CastSpell(SpellSlot.R, target);
+                        if (!targetHadBuff)
+                        {
+                            targetHadBuff = true;
+                            hadBuffTick = Environment.TickCount;
+                        }
+                    }
+                    else if (!config.comboMenu.Get<CheckBox>("useRmoonlightOnly").CurrentValue)
+                        Player.CastSpell(SpellSlot.R, target);
+                }
 
             }
             
@@ -251,7 +289,8 @@ namespace MoonyDiana
         }
 
         /// <summary>
-        /// Tries to hit main target and as much as possible other targets
+        /// Tries to hit main target and as much as possible other targets. 
+        /// Using Movement Prediction to see if in ArcPolygon instead of circular polygon.
         /// </summary>
         /// <param name="target"></param>
         private void DoQOnTargetAndOthers(AIHeroClient target)
@@ -384,7 +423,9 @@ namespace MoonyDiana
             /*E*/
             int minionHits = minionPos.Count(x => x.Distance(me) <= eRange); //eRange
 
-            if (ready(SpellSlot.E) && minionHits >= config.waveClearMenu.Get<Slider>("useEWaveClear").CurrentValue
+            int minimumMinionEHit = config.waveClearMenu.Get<Slider>("useEWaveClear").CurrentValue;
+
+            if (ready(SpellSlot.E) && minionHits >= minimumMinionEHit && minimumMinionEHit != -1
                 && ready(SpellSlot.W))
                 Player.CastSpell(SpellSlot.E);
             /*W*/
