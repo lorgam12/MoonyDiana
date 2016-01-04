@@ -527,6 +527,7 @@ namespace MoonyDiana
             int minComfort = config.miscMenu.Get<Slider>("rEvadeMinComfortDistance").CurrentValue;
             bool toTarget = config.miscMenu.Get<CheckBox>("rEvadeDodgeToEnemyInCombo").CurrentValue &&
                             Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Combo;
+            bool checkFlyPath = config.miscMenu.Get<CheckBox>("useREvadeCheckFlyPath").CurrentValue;
 
             if (!toTarget)
             {
@@ -534,14 +535,12 @@ namespace MoonyDiana
                                x.IsValid && x.IsEnemy)
                     .OrderBy(x => x.Distance(me)))
                 {
-                    if (!isFlyPathSafe(minion.Position))
-                    {
-                        continue;
-                    }     
+                    if (!isFlyPathSafe(minion.Position) && checkFlyPath)
+                        continue; 
 
-                    var closestEnemy = EntityManager.Heroes.Enemies.OrderBy(x => x.Distance(minion)).First();
+                    var closestEnemy = EntityManager.Heroes.Enemies.OrderBy(x => x.Distance(minion)).FirstOrDefault(x => x.IsValid);
 
-                    if (closestEnemy.Distance(minion) >= minComfort)
+                    if (closestEnemy == null || closestEnemy.Distance(minion) >= minComfort)
                     {
                         Player.CastSpell(SpellSlot.R, minion);
                     }
@@ -555,7 +554,7 @@ namespace MoonyDiana
                     .OrderBy(x => x.Distance(target))
                     .Where(minion => evadePlus.IsPointSafe(minion.Position.To2D())))
                 {
-                    if (!isFlyPathSafe(minion.Position))
+                    if (!isFlyPathSafe(minion.Position) && checkFlyPath)
                         continue;
 
                     Player.CastSpell(SpellSlot.R, minion);

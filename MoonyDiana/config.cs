@@ -83,6 +83,7 @@ namespace MoonyDiana
             miscMenu.Add("useREvade", new CheckBox("Use R to evade"));
             miscMenu.Add("rEvadeInfo", new Label("Evading to the closest origin position point"));
             miscMenu.AddSeparator();
+            miscMenu.Add("useREvadeCheckFlyPath", new CheckBox("Check Fly-Path"));
             miscMenu.Add("useREvadeUndodgeableOnly", new CheckBox("Only if undodgeable"));
             miscMenu.Add("rEvadeMinDangerValue", new Slider("Min Danger Value of skillshot to evade", 5, 0, 5));
             miscMenu.Add("rEvadeDodgeToEnemyInCombo", new CheckBox("Evade to target if in combo", false));
