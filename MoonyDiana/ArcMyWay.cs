@@ -2,6 +2,7 @@
 using System.Linq;
 using EloBuddy;
 using EloBuddy.SDK;
+using EloBuddy.SDK.Menu.Values;
 using SharpDX;
 
 namespace MoonyDiana
@@ -19,7 +20,11 @@ namespace MoonyDiana
             return new Vector2(x, y);
         }
 
-        private const int CircleLineSegmentN = 22;
+        private int CircleLineSegmentN
+        {
+            // ReSharper disable once ConvertPropertyToExpressionBody
+            get { return config.miscMenu.Get<Slider>("advancedQPolygonWidth").CurrentValue; }
+        }
 
         private Vector2[] CircleCircleIntersection(Vector2 center1, Vector2 center2, float radius1, float radius2)
         {

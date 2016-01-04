@@ -71,6 +71,7 @@ namespace MoonyDiana
             miscMenu = menu.AddSubMenu("Misc", "misc");
             miscMenu.Add("betterQLogicQuality", new Slider("Advanced Q Quality in %", 20));
             miscMenu.AddLabel("This feature is more cpu intense by generating many polygons");
+            miscMenu.Add("advancedQPolygonWidth", new Slider("Advanced Q Polygon-Width", 18, 10, 22));
             miscMenu.AddSeparator();
             miscMenu.Add("interruptE", new CheckBox("Interrupt with E"));
             miscMenu.Add("antiGapE", new CheckBox("AntiGapCloser with E"));
