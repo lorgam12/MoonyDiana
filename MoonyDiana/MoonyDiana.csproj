@@ -100,7 +100,6 @@
     <Compile Include="Evade\SkillshotTypes\SpecialTypes\YasuoQ.cs" />
     <Compile Include="Evade\SpellData.cs" />
     <Compile Include="Evade\Utils.cs" />
-    <Compile Include="PredictionEx.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="MEC.cs" />
     <Compile Include="Program.cs" />

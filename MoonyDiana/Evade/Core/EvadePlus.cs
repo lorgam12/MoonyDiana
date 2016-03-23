@@ -402,7 +402,7 @@ namespace EvadePlus
                 if (Evade.ExtraEvadeRange > 0)
                 {
                     ExtraRange = (Evade.RandomizeExtraEvadeRange
-                        ? Utils.Random.Next(Evade.ExtraEvadeRange/3, Evade.ExtraEvadeRange)
+                        ? Utils.Random.Next(Evade.ExtraEvadeRange / 3, Evade.ExtraEvadeRange)
                         : Evade.ExtraEvadeRange);
                 }
             }

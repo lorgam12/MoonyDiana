@@ -23,7 +23,7 @@ namespace MoonyDiana
         private int CircleLineSegmentN
         {
             // ReSharper disable once ConvertPropertyToExpressionBody
-            get { return config.miscMenu.Get<Slider>("advancedQPolygonWidth").CurrentValue; }
+            get { return config.predictionMenu.Get<Slider>("advancedQPolygonWidth").CurrentValue; }
         }
 
         private Vector2[] CircleCircleIntersection(Vector2 center1, Vector2 center2, float radius1, float radius2)
@@ -64,7 +64,7 @@ namespace MoonyDiana
         /// </summary>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public Tuple<Geometry.Polygon,Vector2> ToPolygonEx(int offset = 0)
+        public Tuple<Geometry.Polygon,Vector2> ToPolygonA(int offset = 0)
         {
             offset += HitBox;
             var result = new Geometry.Polygon();
