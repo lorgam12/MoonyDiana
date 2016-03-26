@@ -31,9 +31,6 @@ namespace MoonyDiana
 
         public Main()
         {
-            if (me.ChampionName != "Diana")
-                return;
-
             Chat.Print("MoonyDiana loaded!");
 
             config.InitMenu();
